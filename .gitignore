@@ -1,0 +1,10 @@
+
+*.beam
+
+playing_numbers/solutioncpp.cpp
+
+*.dump
+
+*.core
+
+*.cored
