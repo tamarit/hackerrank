@@ -8,3 +8,5 @@ playing_numbers/solutioncpp.cpp
 *.core
 
 *.cored
+
+string-reductions/run.sh
