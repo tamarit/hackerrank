@@ -10,3 +10,21 @@ playing_numbers/solutioncpp.cpp
 *.cored
 
 string-reductions/run.sh
+
+brainf-k-interpreter-fp/input02.txt
+
+brainf-k-interpreter-fp/input03.txt
+
+brainf-k-interpreter-fp/input12.txt
+
+brainf-k-interpreter-fp/input13.txt
+
+brainf-k-interpreter-fp/output02.txt
+
+brainf-k-interpreter-fp/output03.txt
+
+brainf-k-interpreter-fp/output12.txt
+
+brainf-k-interpreter-fp/output13.txt
+
+brainf-k-interpreter-fp/salida
