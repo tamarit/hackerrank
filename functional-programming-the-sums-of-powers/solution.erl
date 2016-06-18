@@ -1,7 +1,7 @@
 % Enter your code here. Read input from STDIN. Print output to STDOUT
 % Your class should be named solution
 
-% https://www.hackerrank.com/challenges/bangalore-bank
+% https://www.hackerrank.com/challenges/functional-programming-the-sums-of-powers
 
 -module(solution).
 -export([main/0, prof/0]).
