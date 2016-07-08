@@ -89,34 +89,6 @@ move(Dice, {CM, CN}, {CM, CN}, Acc, _) ->
     Res = Acc + Dice#dice.top,
     % io:format("~p\n", [{Dice, {CM, CN}, Res, lists:reverse(Stack)}]),
     Res;
-move(Dice, {CM, CN}, {M, CN}, Acc, Stack) ->
-    Key = {Dice, {CM, CN}},
-    Res = 
-        case ets:lookup(p, Key) of 
-            [{{Dice, {CM, CN}}, CValue}] ->
-                CValue;
-            [] ->
-                Res0 = move(down(Dice),  {CM + 1, CN}, {M, CN}, Acc + Dice#dice.top, [down | Stack]),
-                ets:insert(p,{Key, Res0}),
-                insert_new_value({CM, CN}, Acc + Dice#dice.top),
-                Res0
-        end,
-    % io:format("~p\n", [{Dice, {CM, CN}, Res, lists:reverse(Stack)}]),
-    Res;
-move(Dice, {CM, CN}, {CM, N}, Acc, Stack) ->
-    Key = {Dice, {CM, CN}},
-    Res = 
-        case ets:lookup(p, Key) of 
-            [{{Dice, {CM, CN}}, CValue}] ->
-                CValue;
-            [] ->
-                Res0 = move(right(Dice), {CM, CN + 1}, {CM, N}, Acc + Dice#dice.top, [right | Stack]),
-                ets:insert(p,{Key, Res0}),
-                insert_new_value({CM, CN}, Acc + Dice#dice.top),
-                Res0
-        end,
-    % io:format("~p\n", [{Dice, {CM, CN}, Res, lists:reverse(Stack)}]),
-    Res;
 move(Dice, {CM, CN}, {M, N}, Acc, Stack) ->
     Key = {Dice, {CM, CN}},
     Res = 
@@ -125,16 +97,24 @@ move(Dice, {CM, CN}, {M, N}, Acc, Stack) ->
                 % io:format("FOUND: ~p\n", [{Dice, {CM, CN}, CValue, lists:reverse(Stack)}]),
                 CValue;
             [] ->
-                Res0 = max(
-                    move(down(Dice),  {CM + 1, CN}, {M, N}, Acc + Dice#dice.top, [down | Stack]),
-                    move(right(Dice), {CM, CN + 1}, {M, N}, Acc + Dice#dice.top, [right | Stack])
-                ),
+                Res0 = 
+                    case {M, N} of 
+                        {M, CN} ->
+                            move(down(Dice),  {CM + 1, CN}, {M, CN}, Acc + Dice#dice.top, [down | Stack]);
+                        {CM, N} ->
+                            move(right(Dice), {CM, CN + 1}, {CM, N}, Acc + Dice#dice.top, [right | Stack]);
+                        _ ->
+                            max(
+                                move(down(Dice),  {CM + 1, CN}, {M, N}, Acc + Dice#dice.top, [down | Stack]),
+                                move(right(Dice), {CM, CN + 1}, {M, N}, Acc + Dice#dice.top, [right | Stack])
+                            )
+                    end,
                 ets:insert(p,{Key, Res0}),
                 insert_new_value({CM, CN}, Acc + Dice#dice.top),
                 Res0
         end,
     % io:format("~p\n", [{Dice, {CM, CN}, Res, lists:reverse(Stack)}]),
-    Res.
+    Res.  
 
 insert_new_value(Key, NewValue0) ->
     NewValue = 
