@@ -1,7 +1,7 @@
 % Enter your code here. Read input from STDIN. Print output to STDOUT
 % Your class should be named solution
 
-% https://www.hackerrank.com/challenges/dice-path
+% https://www.hackerrank.com/challenges/range-minimum-query
 
 -module(solution).
 -export([main/0, prof/0]).
