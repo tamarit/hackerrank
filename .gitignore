@@ -93,8 +93,6 @@ functional-programming-the-sums-of-powers/input2
 
 minimum-multiple/*
 
-euler001/*
-
 fp-sum-of-odd-elements/input0
 
 dice-path/output3
@@ -177,3 +175,7 @@ fractal-trees/input04
 fractal-trees/input05
 
 fractal-trees/output
+
+euler001/input0
+
+euler001/output0
