@@ -213,3 +213,15 @@ convex-hull-fp/output
 convex-hull-fp/input02
 
 *.txt
+
+euler014/solution.toprecompute.erl
+
+euler014/solution.precomputed.erl
+
+euler014/solution.nodict.erl
+
+euler014/output
+
+euler014/precomputed
+
+euler014/solution.dict.erl
