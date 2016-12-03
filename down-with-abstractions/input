@@ -1,0 +1,4 @@
+3
+(\x. x)
+(\test. (\ignored_1. test))
+(\x. (\y. (y (\z. (\t. ((z (\x. x)) x))))))
