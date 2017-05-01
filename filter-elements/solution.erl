@@ -19,47 +19,38 @@ calculate(Tests) ->
     lists:map(fun calculate_test/1, Tests).
 
 calculate_test({K, List}) ->
-    InitialMap = 
+    {_, _, RepeatedDict} = 
         lists:foldl(
-            fun(E, CMap) -> maps:put(E, 0, CMap) end,
-            #{},
-            lists:usort(List)
-        ),
-    FinalMap = 
-        calculate_test(List, K, InitialMap),
-    get_k_repeated_numbers(List, K, FinalMap, []).
-
-calculate_test([H|T], K, Map) ->
-    PrevValue  = maps:get(H,Map),
-    NT = 
-        case PrevValue >= K of 
-            true -> 
-                lists:filter(fun(E) -> E /= H end, T);
-            false -> 
-                T
-        end,
-    calculate_test(NT, K, Map#{H => PrevValue + 1});
-calculate_test([], _, Map) ->
-    Map.
-
-
-get_k_repeated_numbers([H|T], K, Map, Acc) ->
-    Total = maps:get(H,Map),
-    NT = lists:filter(fun(E) -> E /= H end, T),
-    NAcc = 
-        case Total >= K of 
-            true -> 
-                [H|Acc];
-            false ->
-                Acc
-        end,
-    get_k_repeated_numbers(NT, K, Map, NAcc);
-get_k_repeated_numbers([], _, _, Acc) ->
-    case Acc of 
-        [] ->
+            fun(E, Acc)-> 
+                get_repeated(E, Acc, K)
+            end,
+            {#{}, 1, orddict:new()},
+            List),
+    case orddict:to_list(RepeatedDict) of 
+        [] ->
             [-1];
-        _ ->
-            lists:reverse(Acc)
+        Res ->
+            [N || {_, N} <- Res]
+    end.
+
+get_repeated(E, {Map, N, LRep}, K) ->
+    case maps:is_key(E, Map) of 
+        false ->
+            case K of 
+                1 -> 
+                    {maps:put(E, added, Map), N + 1, orddict:store(N, E, LRep)};
+                _ -> 
+                    {maps:put(E, {1, N}, Map), N + 1, LRep}
+            end;
+        true ->  
+            case maps:get(E, Map) of 
+                added -> 
+                    {Map, N + 1, LRep};
+                {CK, FirstTime} when CK == (K - 1) ->
+                    {maps:put(E, added, Map), N + 1, orddict:store(FirstTime, E, LRep)};
+                {CK, FirstTime}  ->
+                    {maps:put(E, {CK + 1, FirstTime}, Map), N + 1, LRep}
+            end
     end.
     
 
