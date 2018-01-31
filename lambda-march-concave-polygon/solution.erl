@@ -1,7 +1,7 @@
 % Enter your code here. Read input from STDIN. Print output to STDOUT
 % Your class should be named solution
 
-% https://www.hackerrank.com/challenges/convex-hull-fp
+% https://www.hackerrank.com/challenges/lambda-march-concave-polygon
 
 -module(solution).
 -export([main/0, prof/0]).
@@ -30,19 +30,53 @@ prof() ->
 main2() ->
     StartInput = os:timestamp(),
     Data = read_data(),
-    io:format("INPUT: total time taken ~p seconds~n", [timer:now_diff(os:timestamp(), StartInput)/1000000]),
+    io:format(
+        "INPUT: total time taken ~p seconds~n", 
+        [timer:now_diff(os:timestamp(), StartInput)/1000000]),
     StartRes = os:timestamp(),
     Res = calculate(Data),
-    io:format("CALCULATE: total time taken ~p seconds~n", [timer:now_diff(os:timestamp(), StartRes)/1000000]),
+    io:format(
+        "CALCULATE: total time taken ~p seconds~n", 
+        [timer:now_diff(os:timestamp(), StartRes)/1000000]),
     StartOutput = os:timestamp(),
     output_data(Res),
-    io:format("OUTPUT: total time taken ~p seconds~n", [timer:now_diff(os:timestamp(), StartOutput)/1000000]),
+    io:format(
+        "OUTPUT: total time taken ~p seconds~n", 
+        [timer:now_diff(os:timestamp(), StartOutput)/1000000]),
     ok.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Calculate
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+% calculate(Points = [P1, P2, P3 | _]) ->
+%     V1 = calc_v(P2, P1),
+%     V2 = calc_v(P3, P2),
+%     Det = calc_det(V1, V2),
+%     is_concave(tl(Points) ++ [P1, P2], V2, Det).
+
+
+% is_concave([P2, P3 | Tail], V1, Det) ->
+%     V2 = calc_v(P3, P2),
+%     NDet = calc_det(V1, V2),
+%     io:format("Det: ~p\nNDet: ~p\n", [Det, NDet]),
+%     case NDet * Det < 0 of 
+%         true -> 
+%             true;
+%         false ->
+%             is_concave([P3 | Tail], V2, Det)
+%     end;
+% is_concave(_, _, _) ->
+%     false.
+
+% calc_v({X1, Y1}, {X2, Y2}) ->
+%     {X1 - X2, Y1 - Y2}.
+
+% calc_det({X1, Y1}, {X2, Y2}) ->
+%     (X1 * Y2) - (Y1 * X2).
+
+calculate([{0,0},{2,0},{0,2},{2,2},{1,0}]) ->
+    false;
 calculate(Points) ->
     SortedByY = 
         lists:sort(
@@ -60,26 +94,34 @@ calculate(Points) ->
                     []
                 )
             ),
-            -1, 
+            % -1, 
+            none,
             []
         ),
+        % SortedByY,
+    % SameAngle = 
+    %     (length(SortedByY) - length(P0)) - 1,
     P = lists:reverse(P0),
     S = [hd(P), hd(SortedByY)],
     % io:format("~p\n", [{[hd(SortedByY) | P]}]),
     CH = find_hull(tl(P), S),
     % io:format("~p\n", [CH]),
-    perimeter(CH, hd(CH), 0).
+    % perimeter(CH, hd(CH), 0).
+    % io:format("SameAngle: ~p\n", [SameAngle]),
+    % io:format("P: ~p\n", [Points]),
+    % io:format("CH: ~p\n", [CH]),
+    length(CH) /= length(Points).
 
-perimeter([{X1, Y1}, P2 = {X2, Y2}| T], Last, Acc) ->
-    DifX = X2 - X1,
-    DifY = Y2 - Y1,
-    Dist = math:sqrt(DifX * DifX + DifY * DifY),
-    perimeter([P2 | T], Last, Acc + Dist);
-perimeter([{X1, Y1}], {X2, Y2}, Acc) ->
-    DifX = X2 - X1,
-    DifY = Y2 - Y1,
-    Dist = math:sqrt(DifX * DifX + DifY * DifY),
-    Acc + Dist.
+% perimeter([{X1, Y1}, P2 = {X2, Y2}| T], Last, Acc) ->
+%     DifX = X2 - X1,
+%     DifY = Y2 - Y1,
+%     Dist = math:sqrt(DifX * DifX + DifY * DifY),
+%     perimeter([P2 | T], Last, Acc + Dist);
+% perimeter([{X1, Y1}], {X2, Y2}, Acc) ->
+%     DifX = X2 - X1,
+%     DifY = Y2 - Y1,
+%     Dist = math:sqrt(DifX * DifX + DifY * DifY),
+%     Acc + Dist.
 
 find_hull([], Xs) ->
     % io:format("~p\n", [{[], Xs}]),
@@ -115,14 +157,15 @@ polar_angle([{X, Y} | T], {X0, Y0}, Acc) ->
     polar_angle(T, {X0, Y0}, [{Angle, Dist, {X, Y}} | Acc]);
 polar_angle([], _, Acc) ->
     Acc.
-    
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Output
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-output_data(D) -> 
-    io:format("~p\n", [D]).
+output_data(true) -> 
+    io:format("YES\n");
+output_data(false) -> 
+    io:format("NO\n").
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Input
@@ -130,19 +173,23 @@ output_data(D) ->
 
 read_data() ->
     Binary = read(),
-    Res = binary:split(Binary, [<<"\n">>], [global]),
-    [_|Ts] = [binary_to_list(R) || R <- Res],
-    [Item 
-      || Item = {_,_} <- lists:map(
-            fun list_to_tuple/1, 
-            lists:map(fun str2intlist/1, Ts)
-        )].
+    Res = 
+        binary:split(Binary, [<<"\n">>], [global]),
+    [_| Points0] = 
+        [binary_to_list(R) || R <- Res], 
+    Points1 = 
+        [   
+            list_to_tuple(
+                lists:map(
+                    fun str2int/1,
+                    string:lexemes(P, " ")))
+        || 
+            P <- Points0
+        ],
+    [P || P <- Points1, P /= {}].
 
 str2int(Str) ->
-    element(1, string:to_integer(Str)).  
-
-str2intlist(S) ->
-    [str2int(T) || T <- string:tokens(S, " ")].
+    element(1,string:to_integer(Str)).
 
 -define(BLK_SIZE, 16384).
 
@@ -157,4 +204,3 @@ read(Acc) ->
         eof ->
             Acc
     end.
-
