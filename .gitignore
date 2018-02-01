@@ -335,3 +335,7 @@ while-language-fp/while_p.erl
 while-language-fp/while_t.erl
 
 while-language-fp/while.erl
+
+expressions-v2/e2_p.erl
+
+expressions-v2/e2_t.erl
